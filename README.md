@@ -12,4 +12,4 @@ Project contributors:
 
 Project P:
 
-* [Download]([https://github.com/danibazi9/SoftwareCheetahsBackEnd/blob/master/Feasibility%20Study_Software%20Cheetahs.pdf](https://github.com/Agile-Cheetahs/KIA_Backend/blob/main/Team%201%20Project%20Proposal.pdf)https://github.com/Agile-Cheetahs/KIA_Backend/blob/main/Team%201%20Project%20Proposal.pdf)
+* [Download](https://github.com/Agile-Cheetahs/KIA_Backend/blob/main/Team%201%20Project%20Proposal.pdf)
