@@ -8,7 +8,7 @@ This git repository has been created for the back-end side programming of **"Kit
 Project contributors: 
 
 * Danial Bazmandeh, PhD, Computer Science
-* Sadaf Raoufi, PhD, Computer Science
+* Sadaf Raoufi, MSc, Computer Science
 
 Project P:
 
