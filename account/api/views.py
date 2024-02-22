@@ -2,8 +2,9 @@ import json
 
 from django.core.files.base import ContentFile
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 import base64
@@ -73,3 +74,11 @@ class TokenObtainView(ObtainAuthToken):
             custom_response[key] = info[key]
 
         return Response(custom_response, status=status.HTTP_200_OK)
+
+
+@permission_classes((IsAuthenticated,))
+@api_view(['POST'])
+def logout_view(request):
+    # simply delete the token to force a login
+    request.user.auth_token.delete()
+    return Response("Successfully logged out!", status=status.HTTP_200_OK)
