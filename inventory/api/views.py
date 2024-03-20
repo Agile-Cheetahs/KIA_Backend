@@ -23,3 +23,14 @@ def get_all_inventories(request):
     else:
         return Response("ERROR: You are not permitted to make this request!", status=status.HTTP_403_FORBIDDEN)
 
+
+@api_view(['GET', ])
+@permission_classes((IsAuthenticated,))
+def get_my_inventories(request):
+    my_inventories = Inventory.objects.filter(user_id=request.user.user_id)
+
+    serializer = InventorySerializer(my_inventories, many=True)
+    data = json.loads(json.dumps(serializer.data))
+
+    return Response(data, status=status.HTTP_200_OK)
+
