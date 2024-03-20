@@ -27,7 +27,7 @@ class InventoryItem(models.Model):
         ('Fruit', 'Fruit'),
         ('Grocery', 'Grocery'),
     ]
-    category = models.CharField(max_length=10, choices=LOCATION_CHOICES, null=True, blank=True)
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES)
 
     def __str__(self):
         return f"{self.name} - {self.quantity} {self.unit}"
