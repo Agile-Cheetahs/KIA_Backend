@@ -34,6 +34,7 @@ def get_my_inventories(request):
 
     return Response(data, status=status.HTTP_200_OK)
 
+
 @permission_classes((IsAuthenticated,))
 class InventoryItemCRUD(APIView):
     def get(self, args):
