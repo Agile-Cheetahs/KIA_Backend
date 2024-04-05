@@ -10,6 +10,6 @@ Project contributors:
 * Danial Bazmandeh, PhD, Computer Science
 * Sadaf Raoufi, MSc, Computer Science
 
-Project P:
+Project Proposal:
 
 * [Download](https://github.com/Agile-Cheetahs/KIA_Backend/blob/main/Team%201%20Project%20Proposal.pdf)
