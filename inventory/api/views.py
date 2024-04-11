@@ -80,7 +80,12 @@ class InventoryItemCRUD(APIView):
         serializer = InventoryItemSerializer(data=data)
 
         if serializer.is_valid():
-            item = serializer.save()
+            if 'location' in data:
+                location, created = Location.objects.get_or_create(name=data['location'])
+            else:
+                location, created = Location.objects.get_or_create(name='Kitchen')
+
+            item = serializer.save(location=location)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -92,7 +97,7 @@ class InventoryItemCRUD(APIView):
         return Response(f"Item with id {item.item_id} created successfully!", status=status.HTTP_201_CREATED)
 
     def put(self, args):
-        item_id = self.request.data.get('id', None)
+        item_id = self.request.query_params.get('id', None)
         if id is not None:
             try:
                 item = InventoryItem.objects.get(item_id=item_id)
@@ -103,7 +108,17 @@ class InventoryItemCRUD(APIView):
             serializer = InventoryItemSerializer(item, data=data)
 
             if serializer.is_valid():
-                item = serializer.save()
+                if 'location' in data:
+                    location, created = Location.objects.get_or_create(name=data['location'])
+                else:
+                    location, created = Location.objects.get_or_create(name='Kitchen')
+
+                item = serializer.save(location=location)
+
+                if 'expiration_date' in data:
+                    item.expiration_date = data['expiration_date']
+
+                item.save()
                 return Response({'message': f"Item with id {item.item_id} updated successfully!",
                                  'data': json.loads(json.dumps(serializer.data))}, status=status.HTTP_200_OK)
             else:

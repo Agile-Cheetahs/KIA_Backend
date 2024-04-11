@@ -4,6 +4,14 @@ from account.models import Account
 from django.db.models.signals import pre_delete
 
 
+class Location(models.Model):
+    location_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class InventoryItem(models.Model):
     item_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=40)
@@ -17,12 +25,7 @@ class InventoryItem(models.Model):
         ('t', 't'),
     ]
     units = models.CharField(max_length=10, choices=UNITS_CHOICES)
-    LOCATION_CHOICES = [
-        ('Pantry', 'Pantry'),
-        ('Kitchen', 'Kitchen'),
-        ('Cabinet', 'Cabinet'),
-    ]
-    location = models.CharField(max_length=10, choices=LOCATION_CHOICES)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
     expiration_date = models.DateField(null=True, blank=True)
     CATEGORY_CHOICES = [
         ('Fruit', 'Fruit'),

@@ -1,5 +1,4 @@
-from rest_framework import serializers, status
-from rest_framework.response import Response
+from rest_framework import serializers
 
 from account.api.serializer import AccountPropertiesSerializer
 from inventory.models import *
@@ -7,6 +6,7 @@ from inventory.models import *
 
 class InventoryItemSerializer(serializers.ModelSerializer):
     expiration_date = serializers.DateField(required=False)
+    location = serializers.CharField(required=False)
 
     class Meta:
         model = InventoryItem
@@ -29,7 +29,12 @@ class InventorySerializer(serializers.ModelSerializer):
             for item_data in items_data:
                 item_serializer = InventoryItemSerializer(data=item_data)
                 if item_serializer.is_valid():
-                    new_item = item_serializer.save()
+                    if 'location' in item_data:
+                        location, created = Location.objects.get_or_create(name=item_data['location'])
+                    else:
+                        location, created = Location.objects.get_or_create(name='Kitchen')
+
+                    new_item = item_serializer.save(location=location)
 
                     if 'expiration_date' in item_data:
                         new_item.expiration_date = item_data['expiration_date']
@@ -37,9 +42,9 @@ class InventorySerializer(serializers.ModelSerializer):
                     new_item.save()
                     new_items.append(new_item)
                 else:
-                    return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    raise Exception(item_serializer.errors)
         except:
-            return Response("BAD REQUEST: items", status=status.HTTP_400_BAD_REQUEST)
+            raise Exception("BAD REQUEST: items")
 
         inventory = Inventory.objects.create(user=validated_data['user'])
         inventory.items.set(new_items)

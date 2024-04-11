@@ -4,10 +4,21 @@ from inventory.models import *
 
 
 # Register your models here.
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ['location_id', 'name']
+    search_fields = ['name']
+
+    class Meta:
+        model = Location
+
+
+admin.site.register(Location, LocationAdmin)
+
+
 class InventoryItemAdmin(admin.ModelAdmin):
     list_display = ['item_id', 'name', 'quantity', 'units', 'location', 'expiration_date', 'category']
-    search_fields = ['name', 'location', 'category']
-    list_filter = ['location', 'category']
+    search_fields = ['name', 'location__name', 'category']
+    list_filter = ['location__name', 'category']
 
     class Meta:
         model = InventoryItem
