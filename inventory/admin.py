@@ -5,7 +5,7 @@ from inventory.models import *
 
 # Register your models here.
 class InventoryItemAdmin(admin.ModelAdmin):
-    list_display = ['item_id', 'name', 'quantity', 'unit', 'location', 'expiration_date', 'category']
+    list_display = ['item_id', 'name', 'quantity', 'units', 'location', 'expiration_date', 'category']
     search_fields = ['name', 'location', 'category']
     list_filter = ['location', 'category']
 
