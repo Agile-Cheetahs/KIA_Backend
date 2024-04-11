@@ -6,6 +6,7 @@ from inventory.models import *
 
 class InventoryItemSerializer(serializers.ModelSerializer):
     expiration_date = serializers.DateField(required=False)
+    location = serializers.CharField(required=False)
 
     class Meta:
         model = InventoryItem
@@ -14,8 +15,38 @@ class InventoryItemSerializer(serializers.ModelSerializer):
 
 class InventorySerializer(serializers.ModelSerializer):
     user = AccountPropertiesSerializer(read_only=True)
-    items = InventoryItemSerializer(many=True, read_only=True)
+    items = InventoryItemSerializer(many=True)
 
     class Meta:
         model = Inventory
         fields = '__all__'
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items', [])
+
+        try:
+            new_items = []
+            for item_data in items_data:
+                item_serializer = InventoryItemSerializer(data=item_data)
+                if item_serializer.is_valid():
+                    if 'location' in item_data:
+                        location, created = Location.objects.get_or_create(name=item_data['location'])
+                    else:
+                        location, created = Location.objects.get_or_create(name='Kitchen')
+
+                    new_item = item_serializer.save(location=location)
+
+                    if 'expiration_date' in item_data:
+                        new_item.expiration_date = item_data['expiration_date']
+
+                    new_item.save()
+                    new_items.append(new_item)
+                else:
+                    raise Exception(item_serializer.errors)
+        except:
+            raise Exception("BAD REQUEST: items")
+
+        inventory = Inventory.objects.create(user=validated_data['user'])
+        inventory.items.set(new_items)
+
+        return inventory
