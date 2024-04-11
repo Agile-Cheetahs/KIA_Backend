@@ -4,21 +4,10 @@ from inventory.models import *
 
 
 # Register your models here.
-class LocationAdmin(admin.ModelAdmin):
-    list_display = ['location_id', 'name']
-    search_fields = ['name']
-
-    class Meta:
-        model = Location
-
-
-admin.site.register(Location, LocationAdmin)
-
-
 class InventoryItemAdmin(admin.ModelAdmin):
-    list_display = ['item_id', 'name', 'quantity', 'units', 'location', 'expiration_date', 'category']
-    search_fields = ['name', 'location__name', 'category']
-    list_filter = ['location__name', 'category']
+    list_display = ['item_id', 'name', 'quantity', 'unit', 'location', 'expiration_date', 'category']
+    search_fields = ['name', 'location', 'category']
+    list_filter = ['location', 'category']
 
     class Meta:
         model = InventoryItem
@@ -42,3 +31,24 @@ class InventoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Inventory, InventoryAdmin)
+
+# New admin for ShoppingListItem
+# Admin Class for ShoppingListItem
+class ShoppingListItemAdmin(admin.ModelAdmin):
+    list_display = ['item_id', 'name', 'quantity', 'units', 'crossed']
+    search_fields = ['name']
+    list_filter = ['crossed']
+
+admin.site.register(ShoppingListItem, ShoppingListItemAdmin)
+
+# Admin Class for ShoppingList
+class ShoppingListAdmin(admin.ModelAdmin):
+    list_display = ['list_id', 'name', 'display_items', 'is_favorite', 'is_complete']
+    search_fields = ['name']
+    list_filter = ['is_favorite', 'is_complete']
+
+    def display_items(self, obj):
+        return ', '.join([item.name for item in obj.items.all()])
+    display_items.short_description = 'Items in List'
+
+admin.site.register(ShoppingList, ShoppingListAdmin)
