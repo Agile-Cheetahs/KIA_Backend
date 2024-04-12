@@ -139,3 +139,50 @@ class InventoryItemCRUD(APIView):
         else:
             return Response("Id: None, BAD REQUEST", status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def shopping_list_view(request):
+    # GET to retrieve all shopping lists for the user
+    if request.method == 'GET':
+        shopping_lists = ShoppingList.objects.filter(user=request.user)
+        serializer = ShoppingListSerializer(shopping_lists, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    # POST to create a new shopping list
+    elif request.method == 'POST':
+        serializer = ShoppingListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)  # Assuming your ShoppingList model has a 'user' field
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def shopping_list_detail_view(request, list_id):
+    # Attempt to retrieve the specified shopping list
+    try:
+        shopping_list = ShoppingList.objects.get(id=list_id, user=request.user)
+    except ShoppingList.DoesNotExist:
+        return Response({'error': 'Shopping List not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    # GET to retrieve a specific shopping list details
+    if request.method == 'GET':
+        serializer = ShoppingListSerializer(shopping_list)
+        return Response(serializer.data)
+
+    # PUT to update a shopping list
+    elif request.method == 'PUT':
+        serializer = ShoppingListSerializer(shopping_list, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # DELETE to remove a shopping list
+    elif request.method == 'DELETE':
+        shopping_list.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

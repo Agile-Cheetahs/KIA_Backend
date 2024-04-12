@@ -42,3 +42,27 @@ class InventoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Inventory, InventoryAdmin)
+
+
+# Admin Class for ShoppingListItem
+class ShoppingListItemAdmin(admin.ModelAdmin):
+    list_display = ['item_id', 'name', 'quantity', 'units', 'crossed']
+    search_fields = ['name']
+    list_filter = ['crossed']
+
+
+admin.site.register(ShoppingListItem, ShoppingListItemAdmin)
+
+
+# Admin Class for ShoppingList
+class ShoppingListAdmin(admin.ModelAdmin):
+    list_display = ['list_id', 'name', 'display_items', 'is_favorite', 'is_complete']
+    search_fields = ['name']
+    list_filter = ['is_favorite', 'is_complete']
+
+    def display_items(self, obj):
+        return ', '.join([item.name for item in obj.items.all()])
+    display_items.short_description = 'Items in List'
+
+
+admin.site.register(ShoppingList, ShoppingListAdmin)
