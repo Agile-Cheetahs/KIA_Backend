@@ -24,3 +24,14 @@ class AccountAdmin(UserAdmin):
 
 
 admin.site.register(Account, AccountAdmin)
+
+
+class VerificationCodeAdmin(admin.ModelAdmin):
+    list_display = ['id', 'email', 'vc_code', 'time_generated']
+    search_fields = ['email']
+
+    class Meta:
+        model = VerificationCode
+
+
+admin.site.register(VerificationCode, VerificationCodeAdmin)
