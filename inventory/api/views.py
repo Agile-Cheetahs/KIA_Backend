@@ -139,3 +139,65 @@ class InventoryItemCRUD(APIView):
         else:
             return Response("Id: None, BAD REQUEST", status=status.HTTP_400_BAD_REQUEST)
 
+
+@permission_classes((IsAuthenticated,))
+class LocationCRUD(APIView):
+    def get(self, args):
+        loc_id = self.request.query_params.get('id', None)
+        if loc_id is not None:
+            try:
+                location = Location.objects.get(location_id=loc_id)
+            except Location.DoesNotExist:
+                return Response(f"Item with id {loc_id} NOT FOUND!", status=status.HTTP_404_NOT_FOUND)
+
+            serializer = LocationSerializer(location)
+        else:
+            locations = Location.objects.all()
+            serializer = LocationSerializer(locations, many=True)
+
+        data = json.loads(json.dumps(serializer.data))
+        return Response(data, status=status.HTTP_200_OK)
+
+    def post(self, args):
+        data = json.loads(json.dumps(self.request.data))
+        serializer = LocationSerializer(data=data)
+
+        if serializer.is_valid():
+            location = serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(f"Location with id {location.location_id} created successfully!", status=status.HTTP_201_CREATED)
+
+    def put(self, args):
+        loc_id = self.request.query_params.get('id', None)
+        if loc_id is not None:
+            try:
+                location = Location.objects.get(location_id=loc_id)
+            except Location.DoesNotExist:
+                return Response(f"Location with id {loc_id} NOT FOUND!", status=status.HTTP_404_NOT_FOUND)
+
+            data = json.loads(json.dumps(self.request.data))
+            serializer = LocationSerializer(location, data=data)
+
+            if serializer.is_valid():
+                location = serializer.save()
+                return Response({'message': f"Location with id {location.location_id} updated successfully!",
+                                 'data': json.loads(json.dumps(serializer.data))}, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("Id: None, BAD REQUEST", status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, args):
+        loc_id = self.request.query_params.get('id', None)
+        if loc_id is not None:
+            try:
+                location = Location.objects.get(location_id=loc_id)
+                location.delete()
+                return Response(f"Location with id {loc_id} removed successfully!",
+                                status=status.HTTP_204_NO_CONTENT)
+            except Location.DoesNotExist:
+                return Response(f"Location with id {loc_id} NOT FOUND!", status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response("Id: None, BAD REQUEST", status=status.HTTP_400_BAD_REQUEST)

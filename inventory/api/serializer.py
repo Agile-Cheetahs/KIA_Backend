@@ -50,3 +50,11 @@ class InventorySerializer(serializers.ModelSerializer):
         inventory.items.set(new_items)
 
         return inventory
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+
+    class Meta:
+        model = Location
+        fields = '__all__'
