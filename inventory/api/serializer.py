@@ -52,6 +52,14 @@ class InventorySerializer(serializers.ModelSerializer):
         return inventory
 
 
+class LocationSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+
+    class Meta:
+        model = Location
+        fields = '__all__'
+
+
 class ShoppingListItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingListItem
