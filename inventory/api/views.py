@@ -152,7 +152,12 @@ class LocationCRUD(APIView):
 
             serializer = LocationSerializer(location)
         else:
-            locations = Location.objects.all()
+            try:
+                my_inventory = Inventory.objects.get(user=self.request.user)
+            except Inventory.DoesNotExist:
+                return Response(f"No inventory found for this user!", status=status.HTTP_404_NOT_FOUND)
+
+            locations = list(item.location for item in my_inventory.items.all())
             serializer = LocationSerializer(locations, many=True)
 
         data = json.loads(json.dumps(serializer.data))

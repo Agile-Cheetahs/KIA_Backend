@@ -27,7 +27,7 @@ class InventoryItem(models.Model):
         ('t', 't'),
     ]
     units = models.CharField(max_length=10, choices=UNITS_CHOICES)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, related_name='locations', on_delete=models.CASCADE)
     expiration_date = models.DateField(null=True, blank=True)
     CATEGORY_CHOICES = [
         ('Fruit', 'Fruit'),
