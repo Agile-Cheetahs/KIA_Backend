@@ -44,16 +44,21 @@ class InventoryAdmin(admin.ModelAdmin):
 admin.site.register(Inventory, InventoryAdmin)
 
 
+# New admin for ShoppingListItem
 # Admin Class for ShoppingListItem
 class ShoppingListItemAdmin(admin.ModelAdmin):
-    list_display = ['item_id', 'name', 'quantity', 'units', 'crossed']
-    search_fields = ['name']
-    list_filter = ['crossed']
+    list_display = ('item_id', 'name', 'quantity', 'unit', 'crossed_status')
+    search_fields = ('name', 'unit')
+    list_filter = ('crossed',)
+    
+    def crossed_status(self, obj):
+        return 'Crossed' if obj.crossed else 'Not Crossed'
+    crossed_status.short_description = 'Crossed Status'
 
+    class Meta:
+        model = ShoppingListItem
 
 admin.site.register(ShoppingListItem, ShoppingListItemAdmin)
-
-
 # Admin Class for ShoppingList
 class ShoppingListAdmin(admin.ModelAdmin):
     list_display = ['list_id', 'name', 'display_items', 'is_favorite', 'is_complete']
@@ -63,6 +68,5 @@ class ShoppingListAdmin(admin.ModelAdmin):
     def display_items(self, obj):
         return ', '.join([item.name for item in obj.items.all()])
     display_items.short_description = 'Items in List'
-
 
 admin.site.register(ShoppingList, ShoppingListAdmin)
