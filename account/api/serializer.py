@@ -29,7 +29,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class AccountPropertiesSerializer(serializers.ModelSerializer):
+    locations = serializers.SerializerMethodField()
+
     class Meta:
         model = Account
-        fields = ['user_id', 'first_name', 'last_name', 'email', 'phone_number',
+        fields = ['user_id', 'first_name', 'last_name', 'email', 'phone_number', 'locations',
                   'gender', 'image', 'role', 'bio', 'birthday']
+
+    def get_locations(self, obj):
+        locations = obj.locations.all()
+        return [location.name for location in locations]

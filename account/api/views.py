@@ -11,6 +11,7 @@ import base64
 
 from account.api.serializer import RegistrationSerializer, AccountPropertiesSerializer
 from account.models import Account, VerificationCode
+from inventory.models import Location
 
 
 @api_view(['POST'])
@@ -41,6 +42,8 @@ def registration_view(request):
             file = ContentFile(base64.b64decode(request.data['image']), name=filename)
             account.image = file
 
+        location, created = Location.objects.get_or_create(name='Kitchen')
+        account.locations.add(location)
         account.save()
 
         data['response'] = 'successful'
