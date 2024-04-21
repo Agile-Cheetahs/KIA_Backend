@@ -232,7 +232,12 @@ def shopping_list_detail(request, pk):
     list_ = get_object_or_404(ShoppingList, pk=pk, user=request.user)
     if request.method == 'GET':
         serializer = ShoppingListSerializer(list_)
-        return Response(serializer.data)
+        items = list_.items.all()
+        item_serializer = ShoppingListItemSerializer(items, many=True)
+        return Response({
+            'list': serializer.data,
+            'items': item_serializer.data
+        })
 
     elif request.method == 'PUT':
         serializer = ShoppingListSerializer(list_, data=request.data)
@@ -265,16 +270,21 @@ def add_item_to_shopping_list(request, list_pk):
 @permission_classes([IsAuthenticated])
 def modify_or_remove_item_from_list(request, list_pk, item_pk):
     list_ = get_object_or_404(ShoppingList, pk=list_pk, user=request.user)
-    item = get_object_or_404(ShoppingListItem, pk=item_pk)
+    item = get_object_or_404(ShoppingListItem, pk=item_pk, shopping_list=list_)
 
     if request.method == 'PUT':
         serializer = ShoppingListItemSerializer(item, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        list_.items.remove(item)
-        item.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            list_.items.remove(item)  # Ensure the item is removed from the list before deleting
+            item.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            logger.error(f"Failed to delete item {item_pk} from list {list_pk}: {str(e)}")
+            return Response({'error': 'Failed to delete item due to an internal error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
