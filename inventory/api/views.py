@@ -144,21 +144,16 @@ class InventoryItemCRUD(APIView):
 class LocationCRUD(APIView):
     def get(self, args):
         loc_id = self.request.query_params.get('id', None)
+
         if loc_id is not None:
             try:
                 location = Location.objects.get(location_id=loc_id)
             except Location.DoesNotExist:
-                return Response(f"Item with id {loc_id} NOT FOUND!", status=status.HTTP_404_NOT_FOUND)
+                return Response(f"Location with id {loc_id} NOT FOUND!", status=status.HTTP_404_NOT_FOUND)
 
             serializer = LocationSerializer(location)
         else:
-            try:
-                my_inventory = Inventory.objects.get(user=self.request.user)
-            except Inventory.DoesNotExist:
-                return Response(f"No inventory found for this user!", status=status.HTTP_404_NOT_FOUND)
-
-            locations = list(item.location for item in my_inventory.items.all())
-            serializer = LocationSerializer(locations, many=True)
+            serializer = LocationSerializer(self.request.user.locations, many=True)
 
         data = json.loads(json.dumps(serializer.data))
         return Response(data, status=status.HTTP_200_OK)
