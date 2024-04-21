@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from inventory.api.serializer import *
 from inventory.models import *
+from django.shortcuts import get_object_or_404
 
 
 @api_view(['GET', ])
