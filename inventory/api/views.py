@@ -76,6 +76,15 @@ class InventoryItemCRUD(APIView):
             return Response("Id: None, BAD REQUEST", status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, args):
+        personal_flag = self.request.query_params.get('me', None)
+
+        if personal_flag is not None:
+            try:
+                inventory = Inventory.objects.get(user=self.request.user)
+            except Inventory.DoesNotExist:
+                return Response(f"BAD REQUEST: No inventory found for this user!",
+                                status=status.HTTP_400_BAD_REQUEST)
+
         data = json.loads(json.dumps(self.request.data))
         serializer = InventoryItemSerializer(data=data)
 
@@ -93,6 +102,12 @@ class InventoryItemCRUD(APIView):
             item.expiration_date = data['expiration_date']
 
         item.save()
+
+        if personal_flag is not None:
+            inventory.items.add(item)
+            inventory.save()
+            return Response(f"Item with id {item.item_id} added to your inventory successfully!",
+                            status=status.HTTP_201_CREATED)
 
         return Response(f"Item with id {item.item_id} created successfully!", status=status.HTTP_201_CREATED)
 
