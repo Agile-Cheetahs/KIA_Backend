@@ -54,6 +54,7 @@ class Account(AbstractBaseUser):
     phone_number = models.CharField(max_length=13, unique=True)
     password = models.CharField(max_length=20, blank=True)
     role = models.CharField(default='normal-user', max_length=20, verbose_name='role')
+    locations = models.ManyToManyField('inventory.Location', blank=True, related_name='users')
 
     # optional fields
     GENDER_CHOICES = [

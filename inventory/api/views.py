@@ -169,6 +169,7 @@ class LocationCRUD(APIView):
 
         if serializer.is_valid():
             location = serializer.save()
+            self.request.user.locations.add(location)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -200,6 +201,7 @@ class LocationCRUD(APIView):
             try:
                 location = Location.objects.get(location_id=loc_id)
                 location.delete()
+                self.request.user.locations.remove(location)
                 return Response(f"Location with id {loc_id} removed successfully!",
                                 status=status.HTTP_204_NO_CONTENT)
             except Location.DoesNotExist:
