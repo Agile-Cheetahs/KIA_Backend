@@ -184,7 +184,8 @@ class LocationCRUD(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(f"Location with id {location.location_id} created successfully!", status=status.HTTP_201_CREATED)
+        return Response({'message': f"Location with id {location.location_id} created successfully!",
+                         'data': json.loads(json.dumps(serializer.data))}, status=status.HTTP_201_CREATED)
 
     def put(self, args):
         loc_id = self.request.query_params.get('id', None)
