@@ -163,7 +163,7 @@ class LocationCRUD(APIView):
             try:
                 location = Location.objects.get(location_id=loc_id)
             except Location.DoesNotExist:
-                return Response(f"Item with id {loc_id} NOT FOUND!", status=status.HTTP_404_NOT_FOUND)
+                return Response(f"Location with id {loc_id} NOT FOUND!", status=status.HTTP_404_NOT_FOUND)
 
             serializer = LocationSerializer(location)
         else:
@@ -187,7 +187,8 @@ class LocationCRUD(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(f"Location with id {location.location_id} created successfully!", status=status.HTTP_201_CREATED)
+        return Response({'message': f"Location with id {location.location_id} created successfully!",
+                         'data': json.loads(json.dumps(serializer.data))}, status=status.HTTP_201_CREATED)
 
     def put(self, args):
         loc_id = self.request.query_params.get('id', None)
